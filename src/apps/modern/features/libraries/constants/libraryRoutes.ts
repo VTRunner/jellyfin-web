@@ -32,11 +32,16 @@ export const LibraryRoutes: LibraryRoute[] = [
             },
             {
                 index: 4,
+                label: 'RecordingPriority',
+                view: LibraryTab.RecordingPriority
+            },
+            {
+                index: 5,
                 label: 'Schedule',
                 view: LibraryTab.Schedule
             },
             {
-                index: 5,
+                index: 6,
                 label: 'Series',
                 view: LibraryTab.SeriesTimers
             }

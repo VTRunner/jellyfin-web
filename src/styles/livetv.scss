@@ -12,3 +12,147 @@
 #channelsTab .cardImageContainer {
     background-size: contain;
 }
+
+.recordingScheduleView {
+    width: 100%;
+}
+
+.recordingScheduleSummary {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    align-items: stretch;
+    margin-bottom: 1.5em;
+    overflow: hidden;
+    border-radius: 0.35em;
+    background: var(--jf-palette-background-paper, rgba(255, 255, 255, 0.04));
+}
+
+.recordingScheduleSummaryMetric {
+    min-width: 0;
+    padding: 0.8em 1em;
+    text-align: center;
+}
+
+.recordingScheduleSummaryValue {
+    line-height: 1.1;
+}
+
+.recordingScheduleSummaryDivider {
+    align-self: stretch;
+    width: 1px;
+    margin: 0.7em 0;
+    background: var(--jf-palette-divider, rgba(255, 255, 255, 0.12));
+}
+
+.recordingScheduleContent {
+    margin-top: 1em;
+}
+
+.recordingScheduleSectionTitle {
+    margin-bottom: 0.25em;
+}
+
+.recordingScheduleDay {
+    margin: 1.25em 0 1.5em;
+}
+
+.recordingScheduleDayHeading {
+    margin-bottom: 0.65em;
+}
+
+.recordingScheduleTimeline {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.55em;
+}
+
+.recordingScheduleTimeline::before {
+    content: '';
+    position: absolute;
+    inset-inline-start: 5.25rem;
+    top: 0.9rem;
+    bottom: 0.9rem;
+    width: 2px;
+    background: var(--jf-palette-divider, rgba(255, 255, 255, 0.12));
+}
+
+.recordingScheduleTimelineRow {
+    position: relative;
+    display: grid;
+    grid-template-columns: 4.55rem 1.4rem minmax(0, 1fr);
+    align-items: center;
+    min-height: 4.4rem;
+    padding: 0.65em 0.8em 0.65em 0.4em;
+    border: 1px solid var(--jf-palette-divider, rgba(255, 255, 255, 0.08));
+    border-radius: 0.35em;
+    background: var(--jf-palette-background-paper, rgba(255, 255, 255, 0.025));
+}
+
+.recordingScheduleTimelineTime {
+    padding-inline-end: 0.45em;
+    text-align: end;
+}
+
+.recordingScheduleTimelineMarker {
+    position: relative;
+    z-index: 1;
+    width: 0.72rem;
+    height: 0.72rem;
+    margin-inline: auto;
+    border: 2px solid var(--jf-palette-background-default, #101010);
+    border-radius: 50%;
+    background: currentColor;
+}
+
+.recordingScheduleTimelineBody {
+    min-width: 0;
+    padding-inline-start: 0.65em;
+}
+
+.recordingScheduleTimelineHeading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.65em;
+    min-width: 0;
+}
+
+.recordingScheduleTimelineMeta {
+    margin-top: 0.45em;
+}
+
+.recordingScheduleTimelineDetail {
+    align-self: center;
+    min-width: 12em;
+    max-width: 100%;
+}
+
+.recordingScheduleTimelineRow-Conflict {
+    border-inline-start: 0.25em solid var(--jf-palette-error-main, #d32f2f);
+}
+
+.recordingScheduleTimelineRow-PaddingAtRisk {
+    border-inline-start: 0.25em solid var(--jf-palette-warning-main, #ed6c02);
+}
+
+@media all and (max-width: 600px) {
+    .recordingScheduleSummary {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .recordingScheduleTimeline::before {
+        inset-inline-start: 4.35rem;
+    }
+
+    .recordingScheduleTimelineRow {
+        grid-template-columns: 3.65rem 1.4rem minmax(0, 1fr);
+        padding-inline-end: 0.45em;
+    }
+
+    .recordingScheduleTimelineHeading {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 0.3em;
+    }
+}

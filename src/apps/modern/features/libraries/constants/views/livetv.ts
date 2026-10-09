@@ -11,6 +11,15 @@ const seriestimersTabContent: LibraryTabContent = {
     isAlphabetPickerEnabled: false
 };
 
+const recordingPriorityTabContent: LibraryTabContent = {
+    viewType: LibraryTab.RecordingPriority,
+    isPaginationEnabled: false,
+    isBtnFilterEnabled: false,
+    isBtnGridListEnabled: false,
+    isBtnSortEnabled: false,
+    isAlphabetPickerEnabled: false
+};
+
 const scheduleTabContent: LibraryTabContent = {
     viewType: LibraryTab.Schedule,
     sectionsView: {
@@ -59,8 +68,9 @@ const liveTvViews: Record<number, LibraryTabContent> = {
     1: guideTabContent,
     2: channelsTabContent,
     3: recordingsTabContent,
-    4: scheduleTabContent,
-    5: seriestimersTabContent
+    4: recordingPriorityTabContent,
+    5: scheduleTabContent,
+    6: seriestimersTabContent
 };
 
 export default liveTvViews;

@@ -8,6 +8,8 @@ import GenresView from './GenresView';
 import GuideView from './GuideView';
 import ItemsView from './ItemsView';
 import ProgramsSectionView from './ProgramsSectionView';
+import RecordingPriorityView from './RecordingPriorityView';
+import ScheduleView from './ScheduleView';
 import SuggestionsSectionView from './SuggestionsSectionView';
 import UpcomingView from './UpcomingView';
 
@@ -31,7 +33,11 @@ const PageTabContent: FC<PageTabContentProps> = ({ parentId, currentTab }) => {
         );
     }
 
-    if (currentTab.viewType === LibraryTab.Programs || currentTab.viewType === LibraryTab.Recordings || currentTab.viewType === LibraryTab.Schedule) {
+    if (currentTab.viewType === LibraryTab.Schedule) {
+        return <ScheduleView />;
+    }
+
+    if (currentTab.viewType === LibraryTab.Programs || currentTab.viewType === LibraryTab.Recordings) {
         return (
             <ProgramsSectionView
                 sectionType={
@@ -62,6 +68,10 @@ const PageTabContent: FC<PageTabContentProps> = ({ parentId, currentTab }) => {
         return (
             <GuideView />
         );
+    }
+
+    if (currentTab.viewType === LibraryTab.RecordingPriority) {
+        return <RecordingPriorityView />;
     }
 
     return (

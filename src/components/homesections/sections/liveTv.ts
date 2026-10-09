@@ -84,6 +84,7 @@ function buildSection(
     html += '<h2 class="sectionTitle sectionTitle-cards">' + globalize.translate('LiveTV') + '</h2>';
     html += '</div>';
 
+
     if (options.enableOverflow) {
         html += '<div is="emby-scroller" class="padded-top-focusscale padded-bottom-focusscale" data-centerfocus="true" data-scrollbuttons="false">';
         html += '<div class="padded-top padded-bottom scrollSlider focuscontainer-x">';
@@ -109,6 +110,11 @@ function buildSection(
     html += '<a is="emby-linkbutton" href="' + appRouter.getRouteUrl('recordedtv', {
         serverId
     }) + '" class="raised"><span>' + globalize.translate('Recordings') + '</span></a>';
+
+    html += '<a is="emby-linkbutton" href="' + appRouter.getRouteUrl('livetv', {
+        serverId,
+        section: 'recordingpriority'
+    }) + '" class="raised"><span>' + globalize.translate('RecordingPriority') + '</span></a>';
 
     html += '<a is="emby-linkbutton" href="' + appRouter.getRouteUrl('livetv', {
         serverId,

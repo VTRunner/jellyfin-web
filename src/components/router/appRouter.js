@@ -340,12 +340,16 @@ class AppRouter {
                 return '#/livetv?tab=2&serverId=' + serverId;
             }
 
-            if (options.section === 'dvrschedule') {
+            if (options.section === 'recordingpriority') {
                 return '#/livetv?tab=4&serverId=' + serverId;
             }
 
-            if (options.section === 'seriesrecording') {
+            if (options.section === 'dvrschedule') {
                 return '#/livetv?tab=5&serverId=' + serverId;
+            }
+
+            if (options.section === 'seriesrecording') {
+                return '#/livetv?tab=6&serverId=' + serverId;
             }
 
             return '#/livetv?serverId=' + serverId;
