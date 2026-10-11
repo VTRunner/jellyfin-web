@@ -84,7 +84,6 @@ function buildSection(
     html += '<h2 class="sectionTitle sectionTitle-cards">' + globalize.translate('LiveTV') + '</h2>';
     html += '</div>';
 
-
     if (options.enableOverflow) {
         html += '<div is="emby-scroller" class="padded-top-focusscale padded-bottom-focusscale" data-centerfocus="true" data-scrollbuttons="false">';
         html += '<div class="padded-top padded-bottom scrollSlider focuscontainer-x">';

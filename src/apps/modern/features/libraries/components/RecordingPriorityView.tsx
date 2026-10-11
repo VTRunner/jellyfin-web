@@ -4,7 +4,6 @@ import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
@@ -14,6 +13,7 @@ import Typography from '@mui/material/Typography';
 import React, { type FC, useCallback, useEffect, useMemo, useState } from 'react';
 
 import Loading from 'components/loading/LoadingComponent';
+import NoItemsMessage from 'components/common/NoItemsMessage';
 import toast from 'components/toast/toast';
 import { useApi } from 'hooks/useApi';
 import globalize from 'lib/globalize';
@@ -33,6 +33,27 @@ interface PriorityEntry {
 }
 
 const toTimestamp = (value?: string) => value ? new Date(value).getTime() : 0;
+
+const getScheduleText = (entry: PriorityEntry) => {
+    if (entry.activeTimers[0]) {
+        return globalize.translate('RecordingPriorityActive');
+    }
+
+    if (entry.nextTimer) {
+        return `${globalize.translate('RecordingScheduled')} ${new Date(entry.nextTimer.StartDate ?? entry.startDate ?? '').toLocaleString()}`;
+    }
+
+    return '';
+};
+
+const getMoveUrl = (entry: PriorityEntry, moveUp: boolean) => {
+    const direction = moveUp ? 'Up' : 'Down';
+    if (entry.kind === 'series') {
+        return `LiveTv/RecordingPriority/Series/${encodeURIComponent(entry.id)}/${direction}`;
+    }
+
+    return `LiveTv/Timers/${encodeURIComponent(entry.id)}/Priority/${direction}`;
+};
 
 const RecordingPriorityRow: FC<{
     entry: PriorityEntry;
@@ -63,18 +84,10 @@ const RecordingPriorityRow: FC<{
     onDragOver,
     onOpenMaintenance
 }) => {
-    const activeTimer = entry.activeTimers[0];
-
-    const scheduleText = activeTimer
-        ? globalize.translate('RecordingPriorityActive')
-        : entry.nextTimer
-            ? `${globalize.translate('RecordingScheduled')} ${new Date(entry.nextTimer.StartDate ?? entry.startDate ?? '').toLocaleString()}`
-            : '';
-
     const meta = [
         entry.channelName,
         entry.kind === 'series' ? globalize.translate('RecordingPrioritySeries') : globalize.translate('RecordingPriorityOneOff'),
-        scheduleText
+        getScheduleText(entry)
     ].filter(Boolean).join(' • ');
 
     return (
@@ -181,7 +194,6 @@ const RecordingPriorityRow: FC<{
                         <ArrowDownwardIcon fontSize='small' />
                     </IconButton>
                 </Stack>
-
             </Paper>
         </ListItem>
     );
@@ -310,14 +322,9 @@ const RecordingPriorityView: FC = () => {
         const adjacentIndex = moveUp ? currentIndex - 1 : currentIndex + 1;
         if (currentIndex < 0 || adjacentIndex < 0 || adjacentIndex >= entries.length) return;
 
-        const adjacent = entries[adjacentIndex];
         setBusyEntryId(entry.id);
         try {
-            const target = entry.kind === 'series'
-                ? `LiveTv/RecordingPriority/Series/${encodeURIComponent(entry.id)}/${moveUp ? 'Up' : 'Down'}`
-                : `LiveTv/Timers/${encodeURIComponent(entry.id)}/Priority/${moveUp ? 'Up' : 'Down'}`;
-
-            await apiClient.ajax({ type: 'POST', url: apiClient.getUrl(target) });
+            await apiClient.ajax({ type: 'POST', url: apiClient.getUrl(getMoveUrl(entry, moveUp)) });
 
             // Mirror the server's normalized priority order locally. This also handles
             // older duplicate priorities where swapping equal numeric priorities would
@@ -347,12 +354,7 @@ const RecordingPriorityView: FC = () => {
                 const nextIndex = moveUp ? currentIndex - 1 : currentIndex + 1;
                 if (nextIndex < 0 || nextIndex >= order.length) break;
 
-                const adjacent = order[nextIndex];
-                const endpoint = dragged.kind === 'series'
-                    ? `LiveTv/RecordingPriority/Series/${encodeURIComponent(dragged.id)}/${moveUp ? 'Up' : 'Down'}`
-                    : `LiveTv/Timers/${encodeURIComponent(dragged.id)}/Priority/${moveUp ? 'Up' : 'Down'}`;
-
-                await apiClient.ajax({ type: 'POST', url: apiClient.getUrl(endpoint) });
+                await apiClient.ajax({ type: 'POST', url: apiClient.getUrl(getMoveUrl(dragged, moveUp)) });
 
                 const moved = order.splice(currentIndex, 1)[0];
                 order.splice(nextIndex, 0, moved);
@@ -376,9 +378,9 @@ const RecordingPriorityView: FC = () => {
 
         // Use the existing recording-creator popup. It is the standard UI that lets the
         // user record the episode, record the series, or cancel the recording.
-        const programId = entry.kind === 'series'
-            ? entry.activeTimers[0]?.ProgramId ?? entry.nextTimer?.ProgramId
-            : entry.timer?.ProgramId;
+        const programId = entry.kind === 'series' ?
+            entry.activeTimers[0]?.ProgramId ?? entry.nextTimer?.ProgramId :
+            entry.timer?.ProgramId;
 
         if (!programId) return;
 
@@ -392,7 +394,6 @@ const RecordingPriorityView: FC = () => {
         });
     }, [apiClient, load]);
 
-
     if (isLoading) return <Loading />;
 
     if (error) {
@@ -403,41 +404,41 @@ const RecordingPriorityView: FC = () => {
         );
     }
 
+    if (!entries.length) {
+        return <NoItemsMessage />;
+    }
+
     return (
         <Box className='padded-left padded-right padded-bottom-page' sx={{ maxWidth: 1000, mx: 'auto', width: '100%' }}>
             <Typography variant='body2' color='text.secondary' sx={{ mb: 1.5 }}>
                 {globalize.translate('RecordingPriorityHelp')}
             </Typography>
-            {!entries.length ? (
-                <Typography>{globalize.translate('RecordingPriorityNoRecordings')}</Typography>
-            ) : (
-                <List disablePadding>
-                    {entries.map((entry, index) => (
-                        <RecordingPriorityRow
-                            key={`${entry.kind}:${entry.id}`}
-                            entry={entry}
-                            index={index}
-                            total={entries.length}
-                            disabled={busyEntryId !== null}
-                            canManage={canManage}
-                            dragging={draggingEntryId === entry.id}
-                            dragOver={dragOverEntryId === entry.id && draggingEntryId !== entry.id}
-                            onMove={moveEntry}
-                            onDropMove={dragged => {
-                                const draggedEntry = entries.find(item => item.id === draggingEntryId);
-                                if (draggedEntry) void moveEntryToTarget(draggedEntry, dragged);
-                            }}
-                            onDragStart={dragged => setDraggingEntryId(dragged.id)}
-                            onDragEnd={() => {
-                                setDraggingEntryId(null);
-                                setDragOverEntryId(null);
-                            }}
-                            onDragOver={dragged => setDragOverEntryId(dragged.id)}
-                            onOpenMaintenance={openMaintenance}
-                        />
-                    ))}
-                </List>
-            )}
+            <List disablePadding>
+                {entries.map((entry, index) => (
+                    <RecordingPriorityRow
+                        key={`${entry.kind}:${entry.id}`}
+                        entry={entry}
+                        index={index}
+                        total={entries.length}
+                        disabled={busyEntryId !== null}
+                        canManage={canManage}
+                        dragging={draggingEntryId === entry.id}
+                        dragOver={dragOverEntryId === entry.id && draggingEntryId !== entry.id}
+                        onMove={moveEntry}
+                        onDropMove={dragged => {
+                            const draggedEntry = entries.find(item => item.id === draggingEntryId);
+                            if (draggedEntry) void moveEntryToTarget(draggedEntry, dragged);
+                        }}
+                        onDragStart={dragged => setDraggingEntryId(dragged.id)}
+                        onDragEnd={() => {
+                            setDraggingEntryId(null);
+                            setDragOverEntryId(null);
+                        }}
+                        onDragOver={dragged => setDragOverEntryId(dragged.id)}
+                        onOpenMaintenance={openMaintenance}
+                    />
+                ))}
+            </List>
         </Box>
     );
 };
