@@ -150,6 +150,11 @@ export const LibraryRoutes: LibraryRoute[] = [
                 index: 6,
                 label: 'Playlists',
                 view: LibraryTab.Playlists
+            },
+            {
+                index: 7,
+                label: 'People',
+                view: LibraryTab.Persons
             }
         ]
     },
@@ -244,6 +249,11 @@ export const LibraryRoutes: LibraryRoute[] = [
                 index: 7,
                 label: 'Playlists',
                 view: LibraryTab.Playlists
+            },
+            {
+                index: 8,
+                label: 'People',
+                view: LibraryTab.Persons
             }
         ]
     },
